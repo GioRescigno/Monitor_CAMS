@@ -71,23 +71,25 @@ def busca_dongle(palavra):
 	return dado
 
 def busca_camsite(a):
+	palavra = '----'
 	file = cwd+"\CameraSites.txt"
-	x = open(file,'r') 
-	y = x.readlines()
-	x.close()
-	n = y [ len ( y ) -1]
-	m = n.split(' ')
-	site = m[0]
-	lat = m[2]
-	lon = float(m[3])
-	alt = m[6]
-	lon = lon * -1
-	lon = str(lon)
+	with open(file, 'r') as read_obj:
+		for line in read_obj:
+			if palavra in line:
+				j = next(read_obj)
+				j = " ".join(j.split())
+				m = j.split(' ')
+				site = m[0]
+				lat = m[1]
+				lon = float(m[2])
+				alt = m[3]
+				lon = lon * -1
+				lon = str(lon)
 	if a == 0:
 		return site, lat, lon, alt
 	if a == 1:
 		return site
-
+	
 def envia_cpu():
 	data = "%s" % (time.strftime("%Y-%m-%d %H:%M:00"))
 	cpu_data = cpu()
@@ -108,7 +110,7 @@ def envia_cpu():
 		'own_inf' : own_info,
 		'id' : site,
 		'dwagent' : dwagent }
-	url = 'http://giovanni.sytes.net:81/insert.php?'
+	url = 'http://192.168.0.6/insert.php?'
 	r = requests.post(url, values)
 	pastebin_url = r.text
 	#print(data, pastebin_url)
@@ -129,6 +131,7 @@ def envia_cams():
 	datec = calib("Calibration date")
 	horac = calib("Calibration time")
 	fov = calib("FOV dimension hxw")
+	fov = str(fov)
 	azim = calib("Cal center Azim")
 	elev = calib("Cal center Elev")
 	datahorac = datec+" "+horac
@@ -150,14 +153,9 @@ def envia_cams():
 		'azim' : azim,
 		'elev' : elev,
 		'lastfile' : lastfile}
-	#url = 'http://giovanni.sytes.net:81/insert.php?'
-	#r = requests.post(url, values)
-	#pastebin_url = r.text
-	print(datahorac)
-	print(fov)
-	print(azim)
-	print(elev)
-	print(lastfile)
+	url = 'http://192.168.0.6/insert.php?'
+	r = requests.post(url, values)
+	pastebin_url = r.text
 	#print(data, pastebin_url)
 
 def calib(palavra):
@@ -178,7 +176,6 @@ def calib(palavra):
 				m = n.split('=')
 				dado = m[1]
 	dado = dado.replace(" ","")
-	#print(dado)
 	return dado
 
 envia_cams()	
